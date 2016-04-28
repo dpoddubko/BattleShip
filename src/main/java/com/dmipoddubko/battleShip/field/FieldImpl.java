@@ -2,6 +2,9 @@ package com.dmipoddubko.battleShip.field;
 
 import com.dmipoddubko.battleShip.ships.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +50,84 @@ public class FieldImpl implements Field {
         fourFunnel = new FourFunnel();
         shipsXY = new HashMap<>(27);
         field = new boolean[12][12];
+    }
+
+    public Field generateShips() {
+        while (count4 != 1) {
+            generateShip(4);
+        }
+        while (count3 != 2) {
+            generateShip(3);
+        }
+        while (count2 != 3) {
+            generateShip(2);
+        }
+        while (count1 != 4) {
+            addShip(reParseStr(random(1, 10)), random(1, 10));
+        }
+        return this;
+    }
+
+    public void generateShip(int num) {
+        addShip(reParseStr(random(1, 10)), random(1, 10), num, randomDir());
+    }
+
+    public Field addUserShips() {
+        System.out.println("Let's add ships");
+        System.out.println("First add single-funnel ships");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        while (count1 != 4) {
+            try {
+                System.out.println("Enter one letter in the range a-j");
+                String x = br.readLine();
+                System.out.println("Enter one number in the range 1-10");
+                int y = Integer.parseInt(br.readLine());
+                addShip(x, y);
+            } catch (NumberFormatException ne) {
+                System.out.println("Enter correct parameters");
+                continue;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            printField();
+        }
+        System.out.println("Now let's add multi-funnel ships");
+        System.out.println("You have to add: 1 - four-funnel ship;\n 2 - three-funnel ships;\n3 - two-funnel ships;\n");
+        while (!checkAllShips()) {
+            try {
+                System.out.println("Enter one letter in the range a-j");
+                String x = br.readLine();
+                System.out.println("Enter one number in the range 1-10");
+                int y = Integer.parseInt(br.readLine());
+                System.out.println("Enter a size: 2, 3, 4");
+                int size = Integer.parseInt(br.readLine());
+                System.out.println("Select the direction of adding a ship. \n" +
+                        "If you want to draw to right - enter 'r';\n to left - enter 'l';\n" +
+                        " to down - enter 'd';\n to upp - enter 'u'.");
+                String dir = br.readLine();
+                try {
+                    addShip(x, y, size, checkDir(dir));
+                } catch (ConsoleInputException pe) {
+                    System.out.println("Enter correct parameters");
+                    continue;
+                }
+            } catch (NumberFormatException ne) {
+                System.out.println("Enter correct parameters");
+                continue;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            printField();
+            System.out.println("Your ships: single-funnel - " + count1 + ", two-funnel - " + count2 + ", three-funnel - " + count3 + ", four-funnel - " + count4);
+
+        }
+        try {
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return this;
     }
 
     public void addShip(String s, int y) {
@@ -199,7 +280,7 @@ public class FieldImpl implements Field {
         return false;
     }
 
-    public int parseStr(String s) {
+    public static int parseStr(String s) {
         s = s.toUpperCase();
         switch (s) {
             case "A":
@@ -227,6 +308,34 @@ public class FieldImpl implements Field {
         }
     }
 
+    public String reParseStr(int i) {
+        switch (i) {
+            case 1:
+                return "A";
+            case 2:
+                return "B";
+            case 3:
+                return "C";
+            case 4:
+                return "D";
+            case 5:
+                return "E";
+            case 6:
+                return "F";
+            case 7:
+                return "G";
+            case 8:
+                return "H";
+            case 9:
+                return "I";
+            case 10:
+                return "J";
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+
     public boolean validateXY(int x, int y) {
         return (x > 0 && x < 11 && y > 0 && y < 11);
     }
@@ -248,6 +357,22 @@ public class FieldImpl implements Field {
         return field[y][x] == false;
     }
 
+    private Direction checkDir(String dir) throws ConsoleInputException {
+        dir = dir.toUpperCase();
+        switch (dir) {
+            case "U":
+                return Direction.UPP;
+            case "D":
+                return Direction.DOWN;
+            case "R":
+                return Direction.RIGHT;
+            case "L":
+                return Direction.LEFT;
+            default:
+                throw new ConsoleInputException();
+        }
+    }
+
     public int getCount1() {
         return count1;
     }
@@ -257,7 +382,10 @@ public class FieldImpl implements Field {
     }
 
     public void printField() {
+        System.out.println("    A  B  C  D  E  F  G  H  I  J ");
         for (int i = 1; i < 11; i++) {
+            if (i < 10) System.out.print(" " + i + " ");
+            else System.out.print(" 10");
             for (int j = 1; j < 11; j++) {
                 if (field[i][j] == true) System.out.print(" x ");
                 else System.out.print(" * ");
@@ -268,20 +396,16 @@ public class FieldImpl implements Field {
         }
     }
 
+    public void printStatistic() {
+        System.out.println("single-funnel: " + count1 + "\ntwo-funnel: " + count2 + "\nthree-funnel: " + count3 + "\nfour-funnel: " + count4);
+    }
+
     public Ship getSingleFunnel1() {
         return singleFunnel1;
     }
 
     public Ship getSingleFunnel2() {
         return singleFunnel2;
-    }
-
-    public Ship getSingleFunnel3() {
-        return singleFunnel3;
-    }
-
-    public Ship getSingleFunnel4() {
-        return singleFunnel4;
     }
 
     public int getCount2() {
@@ -294,18 +418,6 @@ public class FieldImpl implements Field {
 
     public int getCount4() {
         return count4;
-    }
-
-    public Ship getTwoFunnel1() {
-        return twoFunnel1;
-    }
-
-    public Ship getTwoFunnel2() {
-        return twoFunnel2;
-    }
-
-    public Ship getTwoFunnel3() {
-        return twoFunnel3;
     }
 
     public Ship getThreeFunnel1() {
@@ -323,4 +435,35 @@ public class FieldImpl implements Field {
     public boolean[][] getField() {
         return field;
     }
+
+    private boolean checkAllShips() {
+        return (count2 == 3 && count3 == 2 && count4 == 1);
+    }
+
+    public int random(int min, int max) {
+        max -= min;
+        return (int) (Math.random() * ++max) + min;
+    }
+
+    public Direction randomDir() {
+        int num = random(1, 4);
+        switch (num) {
+            case 1:
+                return Direction.UPP;
+            case 2:
+                return Direction.DOWN;
+            case 3:
+                return Direction.RIGHT;
+            case 4:
+                return Direction.LEFT;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    public void clearField() {
+        field = new boolean[12][12];
+    }
+
+
 }

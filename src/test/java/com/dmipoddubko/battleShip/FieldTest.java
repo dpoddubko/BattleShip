@@ -1,7 +1,6 @@
 package com.dmipoddubko.battleShip;
 
 import com.dmipoddubko.battleShip.field.Direction;
-import com.dmipoddubko.battleShip.field.Field;
 import com.dmipoddubko.battleShip.field.FieldImpl;
 import org.junit.Test;
 
@@ -24,7 +23,7 @@ public class FieldTest {
 
     @Test
     public void parseStrTest() {
-        Field field = new FieldImpl();
+        FieldImpl field = new FieldImpl();
         assertEquals(1, field.parseStr("a"));
         assertEquals(1, field.parseStr("A"));
         assertEquals(2, field.parseStr("b"));
@@ -53,13 +52,12 @@ public class FieldTest {
 
     @Test
     public void addSingleFunnel() {
-        Field field = new FieldImpl();
-        Field field1 = new FieldImpl();
+        FieldImpl field = new FieldImpl();
+        FieldImpl field1 = new FieldImpl();
         field.addShip("a", 2);
         assertEquals(1, field.getCount1());
         assertEquals(field.getSingleFunnel1(), field.getShipsXY().get(asList(1, 2)));
         assertEquals(1, field.getShipsXY().size());
-
         field.addShip("f", 7);
         assertEquals(2, field.getCount1());
         assertEquals(field.getSingleFunnel2(), field.getShipsXY().get(asList(6, 7)));
@@ -96,7 +94,7 @@ public class FieldTest {
 
     @Test
     public void addDownTest() {
-        Field field = new FieldImpl();
+        FieldImpl field = new FieldImpl();
         field.addShip("c", 7, 3, Direction.DOWN);
         assertEquals(1, field.getCount3());
         assertEquals(field.getThreeFunnel1(), field.getShipsXY().get(asList(3, 7)));
@@ -129,7 +127,7 @@ public class FieldTest {
 
     @Test
     public void addUppTest() {
-        Field field = new FieldImpl();
+        FieldImpl field = new FieldImpl();
         field.addShip("c", 7, 3, Direction.UPP);
         assertEquals(1, field.getCount3());
         assertEquals(field.getThreeFunnel1(), field.getShipsXY().get(asList(3, 7)));
@@ -157,7 +155,7 @@ public class FieldTest {
 
     @Test
     public void addRightTest() {
-        Field field = new FieldImpl();
+        FieldImpl field = new FieldImpl();
         field.addShip("a", 1);
         field.addShip("j", 10);
         field.addShip("c", 7, 3, Direction.RIGHT);
@@ -179,7 +177,7 @@ public class FieldTest {
 
     @Test
     public void addLeftTest() {
-        Field field = new FieldImpl();
+        FieldImpl field = new FieldImpl();
         field.addShip("c", 7, 3, Direction.LEFT);
         assertEquals(1, field.getCount3());
         field.addShip("c", 8, 3, Direction.LEFT);
@@ -194,6 +192,5 @@ public class FieldTest {
         assertEquals(1, field.getCount2());
         field.addShip("j", 12, 2, Direction.LEFT);
         assertEquals(1, field.getCount2());
-        field.printField();
     }
 }
