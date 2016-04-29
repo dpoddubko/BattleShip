@@ -2,10 +2,14 @@ package com.dmipoddubko.battleShip;
 
 import com.dmipoddubko.battleShip.field.Direction;
 import com.dmipoddubko.battleShip.field.FieldImpl;
+import com.dmipoddubko.battleShip.field.ReadStringImpl;
 import org.junit.Test;
+
+import java.io.IOException;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class FieldTest {
 
@@ -173,7 +177,7 @@ public class FieldTest {
         assertEquals(0, field.getCount2());
         field.addShip("i", 8, 2, Direction.RIGHT);
         assertEquals(1, field.getCount2());
-            }
+    }
 
     @Test
     public void addLeftTest() {
@@ -192,5 +196,53 @@ public class FieldTest {
         assertEquals(1, field.getCount2());
         field.addShip("j", 12, 2, Direction.LEFT);
         assertEquals(1, field.getCount2());
+    }
+
+    @Test
+    public void randomTest() {
+        FieldImpl field = new FieldImpl();
+        int num = field.random(0, 2);
+        assertTrue(0 <= num && num <= 2);
+        num = field.random(3, 5);
+        assertTrue(3 <= num && num <= 5);
+    }
+
+    @Test
+    public void generateShipsTest() {
+        FieldImpl field = new FieldImpl();
+        field.generateShips();
+        assertEquals(4, field.getCount1());
+        assertEquals(3, field.getCount2());
+        assertEquals(2, field.getCount3());
+        assertEquals(1, field.getCount4());
+    }
+
+    @Test
+    public void reParseStrTest() {
+        FieldImpl field = new FieldImpl();
+        assertEquals("A", field.reParseStr(1));
+        assertEquals("B", field.reParseStr(2));
+        assertEquals("E", field.reParseStr(5));
+        assertEquals("I", field.reParseStr(9));
+        assertEquals("J", field.reParseStr(10));
+    }
+
+    @Test
+    public void addUserShipsTest() throws IOException {
+        ReadStringImpl rs = mock(ReadStringImpl.class);
+        when(rs.readStr()).thenReturn("a").thenReturn("c").thenReturn("a").thenReturn("j").thenReturn("i").thenReturn("r").thenReturn("i").thenReturn("r").thenReturn("g").thenReturn("d").thenReturn("i").thenReturn("u").thenReturn("d").thenReturn("l").thenReturn("e").thenReturn("u");
+        when(rs.readInt()).thenReturn(1).thenReturn(2).thenReturn(3).thenReturn(10).thenReturn(1).thenReturn(2).thenReturn(3).thenReturn(2).thenReturn(4).thenReturn(2).thenReturn(7).thenReturn(3).thenReturn(9).thenReturn(3).thenReturn(6).thenReturn(4);
+        FieldImpl field = new FieldImpl();
+        field.addUserShips(rs);
+        verify(rs, times(16)).readStr();
+        verify(rs, times(16)).readInt();
+        assertEquals(4, field.getCount1());
+        assertEquals(3, field.getCount2());
+        assertEquals(2, field.getCount3());
+        assertEquals(1, field.getCount4());
+        assertEquals(field.getFourFunnel(), field.getShipsXY().get(asList(5, 3)));
+        assertEquals(field.getFourFunnel(), field.getShipsXY().get(asList(5, 4)));
+        assertEquals(field.getFourFunnel(), field.getShipsXY().get(asList(5, 5)));
+        assertEquals(field.getFourFunnel(), field.getShipsXY().get(asList(5, 6)));
     }
 }

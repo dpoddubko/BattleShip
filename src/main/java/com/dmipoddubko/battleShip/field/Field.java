@@ -1,13 +1,11 @@
 package com.dmipoddubko.battleShip.field;
 
 public interface Field {
-    Field addUserShips();
+    Field addUserShips(ReadString rs);
 
     Field generateShips();
 
     void printField();
-
-    boolean[][] getField();
 
     void clearField();
 }

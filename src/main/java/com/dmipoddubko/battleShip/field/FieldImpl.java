@@ -2,9 +2,7 @@ package com.dmipoddubko.battleShip.field;
 
 import com.dmipoddubko.battleShip.ships.*;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,17 +70,15 @@ public class FieldImpl implements Field {
         addShip(reParseStr(random(1, 10)), random(1, 10), num, randomDir());
     }
 
-    public Field addUserShips() {
+    public Field addUserShips(ReadString rs) {
         System.out.println("Let's add ships");
         System.out.println("First add single-funnel ships");
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
         while (count1 != 4) {
             try {
                 System.out.println("Enter one letter in the range a-j");
-                String x = br.readLine();
+                String x = rs.readStr();
                 System.out.println("Enter one number in the range 1-10");
-                int y = Integer.parseInt(br.readLine());
+                int y = rs.readInt();
                 addShip(x, y);
             } catch (NumberFormatException ne) {
                 System.out.println("Enter correct parameters");
@@ -97,15 +93,15 @@ public class FieldImpl implements Field {
         while (!checkAllShips()) {
             try {
                 System.out.println("Enter one letter in the range a-j");
-                String x = br.readLine();
+                String x = rs.readStr();
                 System.out.println("Enter one number in the range 1-10");
-                int y = Integer.parseInt(br.readLine());
+                int y = rs.readInt();
                 System.out.println("Enter a size: 2, 3, 4");
-                int size = Integer.parseInt(br.readLine());
+                int size = rs.readInt();
                 System.out.println("Select the direction of adding a ship. \n" +
                         "If you want to draw to right - enter 'r';\n to left - enter 'l';\n" +
                         " to down - enter 'd';\n to upp - enter 'u'.");
-                String dir = br.readLine();
+                String dir = rs.readStr();
                 try {
                     addShip(x, y, size, checkDir(dir));
                 } catch (ConsoleInputException pe) {
@@ -122,11 +118,7 @@ public class FieldImpl implements Field {
             System.out.println("Your ships: single-funnel - " + count1 + ", two-funnel - " + count2 + ", three-funnel - " + count3 + ", four-funnel - " + count4);
 
         }
-        try {
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        rs.close();
         return this;
     }
 
@@ -373,10 +365,6 @@ public class FieldImpl implements Field {
         }
     }
 
-    public int getCount1() {
-        return count1;
-    }
-
     public Map<List<Integer>, Ship> getShipsXY() {
         return shipsXY;
     }
@@ -406,6 +394,10 @@ public class FieldImpl implements Field {
 
     public Ship getSingleFunnel2() {
         return singleFunnel2;
+    }
+
+    public int getCount1() {
+        return count1;
     }
 
     public int getCount2() {
@@ -464,6 +456,4 @@ public class FieldImpl implements Field {
     public void clearField() {
         field = new boolean[12][12];
     }
-
-
 }
